@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Striped Seafloor — Upside Down Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B2541; --navy2:#26325A; --grid:#33416B; --cream:#F4EFE6; --card:#FFFFFF;
+    --gold:#E2AC48; --ochre:#8A5A12; --teal:#2E7D74; --tealB:#45B3A5; --orange:#D9773A;
+    --ink:#1B2541; --line:#E6DDCB;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{overflow:hidden}
+  body{background:var(--cream);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+  .wrap{width:1000px;transform-origin:top left;background:var(--cream)}
+  header{background:var(--navy);padding:14px 24px 12px;color:#fff}
+  h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:.01em}
+  .bar{width:150px;height:4px;background:var(--gold);border-radius:2px;margin:6px 0 6px}
+  .sub{font-size:.92rem;font-weight:700;color:#F4EFE6}
+  main{padding:12px 20px 8px}
+  .stage{display:grid;gap:12px;align-items:start}
+  .card{background:var(--card);border-radius:12px;padding:10px 14px 12px;box-shadow:0 1px 3px rgba(27,37,65,.12)}
+  .card h2{display:flex;align-items:center;gap:9px;font-size:.84rem;font-weight:800;letter-spacing:.06em;margin:0 0 8px;color:var(--navy)}
+  .ic{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .ic svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .ic.gold{background:var(--gold)} .ic.gold svg{stroke:var(--navy)}
+  .ic.teal{background:var(--teal)} .ic.orange{background:var(--orange)} .ic.navy{background:var(--navy)}
+  canvas{display:block;width:100%;background:var(--navy);border-radius:10px}
+  .hint{font-size:.8rem;font-weight:700;color:var(--ochre);margin-top:6px}
+  .panel{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .k{font-size:.9rem;font-weight:700;white-space:nowrap}
+  .row .v{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums;text-align:right;color:var(--navy)}
+  .row .v.hot{color:var(--orange)}
+  input[type=range]{width:100%;accent-color:var(--gold)}
+  .ends{display:flex;justify-content:space-between;font-size:.8rem;font-weight:700;color:var(--ochre)}
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  button{font-family:inherit;font-size:.9rem;font-weight:800;background:var(--navy);color:#fff;border:2px solid var(--navy);border-radius:8px;padding:7px 10px;cursor:pointer}
+  button:hover{background:var(--navy2)}
+  button.teal{background:var(--teal);border-color:var(--teal)}
+  button.teal:hover{background:#25685F}
+  button.ghost{background:#fff;color:var(--navy)}
+  button.ghost:hover{background:var(--cream)}
+  button.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+  button.wide{grid-column:1/-1}
+  button:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  footer{display:flex;justify-content:space-between;gap:12px;padding:6px 22px 10px;font-size:.8rem;font-weight:700;color:var(--ochre)}
+
+  .stage{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+  canvas#sea{cursor:pointer}
+  .btns{grid-template-columns:1.35fr 1fr}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;font-weight:700;margin-top:8px}
+  .sw{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:6px;border:1px solid var(--navy)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Striped Seafloor</h1>
+    <div class="bar"></div>
+    <div class="sub">Tow the magnetometer across the ridge. Then click a stripe to read it.</div>
+  </header>
+  <main>
+  <div class="stage">
+    <div class="card">
+      <h2><span class="ic teal"><svg viewBox="0 0 24 24"><path d="M2 12h3l2-6 3 12 3-9 2 3h7"/></svg></span>SURVEY ACROSS A MID-OCEAN RIDGE · MAP VIEW</h2>
+      <canvas id="sea" tabindex="0" aria-label="Seafloor survey. Click a surveyed stripe to read it."></canvas>
+      <div class="legend">
+        <span><span class="sw" style="background:#D9773A"></span>Normal: field pointed north, as today</span>
+        <span><span class="sw" style="background:#F4EFE6"></span>Reversed: field pointed south</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="card">
+        <h2><span class="ic gold"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg></span>SELECTED STRIPE</h2>
+        <div class="row"><span class="k">Stripe</span><span class="v" id="sName">None selected</span></div>
+        <div class="row"><span class="k">Side of ridge</span><span class="v" id="sSide">—</span></div>
+        <div class="row"><span class="k">Distance from ridge</span><span class="v" id="sDist">—</span></div>
+        <div class="row"><span class="k">Age (million years)</span><span class="v" id="sAge">—</span></div>
+        <div class="row"><span class="k">Magnetic direction</span><span class="v hot" id="sPol">—</span></div>
+      </div>
+      <div class="card">
+        <h2><span class="ic orange"><svg viewBox="0 0 24 24"><path d="M3 15h18l-3 4H6z"/><path d="M8 15V9h6v6"/><path d="M11 9V5"/></svg></span><label for="ship">SHIP POSITION</label></h2>
+        <input type="range" id="ship" min="-125" max="125" step="1" value="-125">
+        <div class="ends"><span>125 km W</span><span>125 km E</span></div>
+        <div class="btns">
+          <button id="tow" class="teal">Tow magnetometer</button>
+          <button id="reset" class="ghost">Start over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </main>
+  <footer><span>Upside Down Learning</span><span>Spreading rate: 2.5 cm per year on each side of the ridge.</span></footer>
+</div>
+<script>
+(function(){
+  "use strict";
+  var FONT="'Nunito',system-ui,sans-serif";
+  var COL={navy:"#1B2541",navy2:"#26325A",grid:"#33416B",cream:"#F4EFE6",gold:"#E2AC48",teal:"#45B3A5",orange:"#D9773A"};
+  var RATE=25, EDGE=125;
+  var CHRONS=[[0,0.78,"N","A"],[0.78,2.58,"R","B"],[2.58,3.58,"N","C"],[3.58,5.0,"R","D"]];
+  var ship=-EDGE, surveyed=-EDGE, sel=null, towT=null, geom=null;
+  var slider=document.getElementById("ship"), towB=document.getElementById("tow");
+  function chronAt(k){var a=Math.abs(k)/RATE;for(var i=0;i<CHRONS.length;i++)if(a>=CHRONS[i][0]&&a<CHRONS[i][1])return CHRONS[i];return CHRONS[CHRONS.length-1];}
+  function setup(cv,h){var r=window.devicePixelRatio||1,w=cv.clientWidth;cv.width=w*r;cv.height=h*r;cv.style.height=h+"px";var x=cv.getContext("2d");x.setTransform(r,0,0,r,0,0);return[x,w,h];}
+  function setShip(v){ship=Math.max(-EDGE,Math.min(EDGE,v));slider.value=Math.round(ship);if(ship>surveyed)surveyed=ship;draw();}
+  function stopTow(){if(towT){clearInterval(towT);towT=null;}towB.textContent="Tow magnetometer";towB.classList.remove("on");}
+  slider.addEventListener("input",function(e){setShip(+e.target.value);});
+  towB.onclick=function(){
+    if(towT){stopTow();return;}
+    if(ship>=EDGE)setShip(-EDGE);
+    towB.textContent="Pause";towB.classList.add("on");
+    towT=setInterval(function(){if(ship>=EDGE){stopTow();return;}setShip(ship+1.5);},30);
+  };
+  document.getElementById("reset").onclick=function(){stopTow();surveyed=-EDGE;sel=null;show();setShip(-EDGE);};
+  function show(){
+    function f(id,t){document.getElementById(id).textContent=t;}
+    if(!sel){f("sName","None selected");["sSide","sDist","sAge","sPol"].forEach(function(i){f(i,"—");});return;}
+    var a0=sel.ch[0],a1=sel.ch[1],p=sel.ch[2],lab=sel.ch[3];
+    f("sName","Stripe "+lab);
+    f("sSide",lab==="A"?"Both (center)":sel.side);
+    f("sDist",lab==="A"?"0 to "+(a1*RATE).toFixed(1)+" km":(a0*RATE).toFixed(1)+" to "+(a1*RATE).toFixed(1)+" km");
+    f("sAge",a0.toFixed(2)+" to "+a1.toFixed(2));
+    f("sPol",p==="N"?"Normal":"Reversed");
+  }
+  function draw(){
+    var cv=document.getElementById("sea"),a=setup(cv,372),x=a[0],w=a[1],h=a[2];
+    x.clearRect(0,0,w,h);
+    var L=18,R=w-18,pw=R-L;function X(k){return L+(k+EDGE)/(2*EDGE)*pw;}
+    var pT=30,pH=78,mT=pT+pH+50,mH=h-mT-50;
+    geom={mT:mT,mH:mH,L:L,pw:pw};
+    // trace
+    x.font="800 12px "+FONT;x.fillStyle=COL.gold;x.textAlign="left";x.textBaseline="top";
+    x.fillText("MAGNETOMETER READING",L,pT-21);
+    x.fillStyle=COL.cream;x.textAlign="right";x.fillText("high",R,pT-21);x.fillText("low",R,pT+pH+3);
+    x.fillStyle=COL.navy2;x.fillRect(L,pT,pw,pH);
+    x.strokeStyle=COL.grid;x.lineWidth=1;x.beginPath();x.moveTo(L,pT+pH/2);x.lineTo(R,pT+pH/2);x.stroke();
+    x.strokeStyle=COL.gold;x.lineWidth=2.6;x.beginPath();var first=true;
+    for(var k=-EDGE;k<=surveyed;k+=0.5){
+      var v=0;for(var s=-3;s<=3;s++)v+=(chronAt(k+s)[2]==="N"?1:-1);v/=7;
+      var yy=pT+pH/2-v*(pH/2-10);if(first){x.moveTo(X(k),yy);first=false;}else x.lineTo(X(k),yy);
+    }
+    x.stroke();
+    // seafloor
+    x.fillStyle=COL.navy2;x.fillRect(L,mT,pw,mH);
+    for(var px=0;px<pw;px++){var kk=-EDGE+(px+0.5)/pw*2*EDGE;if(kk>surveyed)break;x.fillStyle=chronAt(kk)[2]==="N"?COL.orange:COL.cream;x.fillRect(L+px,mT,1.2,mH);}
+    if(surveyed<=-EDGE){x.fillStyle=COL.cream;x.font="800 13px "+FONT;x.textAlign="center";x.textBaseline="middle";x.fillText("NOT YET SURVEYED",L+pw/2,mT+mH/2);}
+    // ridge
+    x.strokeStyle=COL.navy;x.lineWidth=2.5;x.setLineDash([7,5]);x.beginPath();x.moveTo(X(0),mT);x.lineTo(X(0),mT+mH);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.gold;x.font="800 12px "+FONT;x.textAlign="center";x.textBaseline="bottom";x.fillText("RIDGE",X(0),mT-6);
+    // labels
+    x.textBaseline="top";x.font="800 15px "+FONT;x.fillStyle=COL.cream;
+    CHRONS.forEach(function(ch){
+      if(ch[3]==="A"){x.fillText("A",X(0),mT+mH+6);return;}
+      var mid=(ch[0]+Math.min(ch[1],EDGE/RATE))/2*RATE;
+      x.fillText(ch[3],X(mid),mT+mH+6);x.fillText(ch[3],X(-mid),mT+mH+6);
+    });
+    // selection
+    if(sel){var b0=sel.ch[0]*RATE,b1=Math.min(sel.ch[1]*RATE,EDGE),k0,k1;
+      if(sel.ch[3]==="A"){k0=-b1;k1=b1;}else if(sel.side==="East"){k0=b0;k1=b1;}else{k0=-b1;k1=-b0;}
+      x.strokeStyle=COL.teal;x.lineWidth=4;x.strokeRect(X(k0)+2,mT+2,X(k1)-X(k0)-4,mH-4);}
+    // axis
+    x.fillStyle=COL.gold;x.font="700 12px "+FONT;x.textBaseline="top";
+    [-100,-50,0,50,100].forEach(function(k){x.fillText(k===0?"0 km":Math.abs(k)+" km "+(k<0?"W":"E"),X(k),mT+mH+28);});
+    // ship
+    var sx=Math.max(L+16,Math.min(R-16,X(ship))),sy=pT+pH+31;
+    x.strokeStyle=COL.cream;x.lineWidth=1.5;x.setLineDash([2,3]);x.beginPath();x.moveTo(sx,sy+4);x.lineTo(sx,mT);x.stroke();x.setLineDash([]);
+    x.fillStyle="#FFFFFF";x.beginPath();x.moveTo(sx-16,sy-6);x.lineTo(sx+16,sy-6);x.lineTo(sx+10,sy+4);x.lineTo(sx-10,sy+4);x.closePath();x.fill();
+    x.fillStyle=COL.orange;x.fillRect(sx-5,sy-14,10,8);
+  }
+  document.getElementById("sea").addEventListener("click",function(e){
+    if(!geom)return;var r=e.currentTarget.getBoundingClientRect(),sc=r.width/e.currentTarget.clientWidth;
+    var px=(e.clientX-r.left)/sc,py=(e.clientY-r.top)/sc;
+    if(py<geom.mT||py>geom.mT+geom.mH)return;
+    var k=-EDGE+(px-geom.L)/geom.pw*2*EDGE;
+    sel=k>surveyed?null:{ch:chronAt(k),side:k>=0?"East":"West"};
+    show();draw();
+  });
+  var wrap=document.querySelector(".wrap");
+  function fit(){wrap.style.transform="none";wrap.style.marginLeft="0";var s=Math.min(window.innerWidth/wrap.offsetWidth,window.innerHeight/wrap.offsetHeight);wrap.style.transform="scale("+s+")";wrap.style.marginLeft=Math.max(0,(window.innerWidth-wrap.offsetWidth*s)/2)+"px";}
+  window.addEventListener("resize",function(){draw();fit();});
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(function(){draw();fit();});
+  show();setShip(-EDGE);fit();
+})();
+</script>
+</body>
+</html>
